@@ -1,32 +1,33 @@
 import { Component, OnInit } from '@angular/core';
 import { Injectable } from '@angular/core';
 
+// Only GETSTATE, DISPATCH, and SUBSCRIBE should be invoked from outside this component
+
 @Injectable()
 export class Store implements OnInit {
 
-	state;
-	listeners = [];
-	stateHistory = []; //holds previous states in the form of a stack
-	listenerHistory = [];
+	private state;
+	private listeners = [];
+	private stateHistory = []; //holds previous states in the form of a stack
+	private listenerHistory = [];
 
-	reducer(state: Object, action: Object) {
+	private reducer(state: Object, action: Object) {
+		let newState;
+		// Add functionality for initiation and updating of state here.
+		// After initialization, do NOT modify this.state. Modify newState and return that instead.
+		// Previous version of this.state will be saved in this.stateHistory by the dispatch method.
 
+		return newState;
 	}
 
-	constructor() { }
+	private constructor() { }
 
-	ngOnInit(): void {
-		this.state = this.reducer(null, {})
-	}
+	private ngOnInit(): void { this.state = this.reducer(null, {}) }
 
-	getState() {
-		return this.state
-	}
-	/*
-	  * Takes in an action, which is a string (name of action), that gets passed into the reducer
-	 */
+	getState() { return this.state }
+
 	dispatch(action: Object) {
-		if (this.state) this.stateHistory.push(this.state);
+		this.stateHistory.push(this.state);
 		this.state = this.reducer(this.state, action.type);
 		this.listeners.forEach(l => l()) //loop through the array of listeners
 	}
@@ -34,7 +35,9 @@ export class Store implements OnInit {
 	subscribe(fn) {
 		this.listenerHistory.push(this.listeners);
 		this.listeners = this.listeners.concat(fn); // not altering the original listeners array.
-		return () => this.listeners.filter(func => func !== fn)
+		return () => {
+			this.listenerHistory.push(this.listeners);
+			this.listeners = this.listeners.filter(func => func !== fn);
+		}
 	}
-
 }

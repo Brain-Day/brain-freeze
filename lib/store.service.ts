@@ -1,11 +1,11 @@
-import { Component, OnInit, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 // Purpose of Store is to have one state container for the whole app.
 // Only GETSTATE, DISPATCH, and SUBSCRIBE should be invoked from outside this component
 
 @Injectable()
-export class StoreService implements OnInit {
-    private constructor() { }
+export class StoreService {
+    constructor() { }
     private state: Object;
     private listeners: Function[];
     /**
@@ -13,26 +13,26 @@ export class StoreService implements OnInit {
       private listenerHistory: Function[][];
     */
 
-        // Add functionality for initiation and updating of state here.
-        // For example: if (!state) state = ...
-        // After initialization, do NOT modify this.state. Copy to and modify newState, and return that instead.
-        // Previous version of this.state will be saved in this.stateHistory by the dispatch method.
-    
-    private reducer: Function;
-    
-    private setReducer(reducer: Function): void {
-        this.reducer = reducer;
-        this.state = this.reducer(null, {});
-    }
+    // Add functionality for initiation and updating of state here.
+    // For example: if (!state) state = ...
+    // After initialization, do NOT modify this.state. Copy to and modify newState, and return that instead.
+    // Previous version of this.state will be saved in this.stateHistory by the dispatch method.
 
-    private ngOnInit(): void { }
+    private reducers: Function[];
+
+    // Pass reducers into the addReducer function. Each reducer must take in a state, an action, and return a new state.
+    // Format: function reducer( )
+    private addReducer(reducer: Function): void {
+        this.reducers = this.reducers.concat(reducer);
+    }
 
     getState() { return this.state }
 
     dispatch(action: Object) {
         // this.stateHistory.push(this.state);
-        this.state = this.reducer(this.state, action);
+        let newState = this.reducers.reduce((state, reducer) => { return reducer(state, action) }, this.state);
         this.listeners.forEach(l => l()) //loop through the array of listeners
+        return newState;
     }
 
     subscribe(fn) {

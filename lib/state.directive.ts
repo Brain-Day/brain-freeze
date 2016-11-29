@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Injectable } from '@angular/core';
 
+// Purpose of Store is to have one state container for the whole app.
 // Only GETSTATE, DISPATCH, and SUBSCRIBE should be invoked from outside this component
 
 @Injectable()
@@ -14,7 +15,8 @@ export class Store implements OnInit {
 	private reducer(state: Object, action: Object) {
 		let newState;
 		// Add functionality for initiation and updating of state here.
-		// After initialization, do NOT modify this.state. Modify newState and return that instead.
+		// For example: if (!state) state = ...
+		// After initialization, do NOT modify this.state. Copy to and modify newState, and return that instead.
 		// Previous version of this.state will be saved in this.stateHistory by the dispatch method.
 
 		return newState;

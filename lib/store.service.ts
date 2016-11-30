@@ -9,20 +9,19 @@ export class StoreService {
     private state: Object;
     private listeners: Function[];
     /**
-      private stateHistory: Object[]; //holds previous states in the form of a stack
+      private stateHistory: Object[]; //holds previous states
       private listenerHistory: Function[][];
     */
 
-    // Add functionality for initiation and updating of state here.
-    // For example: if (!state) state = ...
-    // After initialization, do NOT modify this.state. Copy to and modify newState, and return that instead.
-    // Previous version of this.state will be saved in this.stateHistory by the dispatch method.
 
+    // Pass reducers into the addReducer function. Each reducer must take in a state and an action object, and then return a new state.
+    // Example format: function reducer(state, action) {
+    //             let newState = state;
+    //             ... logic ...
+    //             return newState;
+    //         }
     private reducers: Function[];
-
-    // Pass reducers into the addReducer function. Each reducer must take in a state, an action, and return a new state.
-    // Format: function reducer( )
-    private addReducer(reducer: Function): void {
+    addReducer(reducer: Function) {
         this.reducers = this.reducers.concat(reducer);
     }
 

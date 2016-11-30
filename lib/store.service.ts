@@ -6,11 +6,11 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class StoreService {
     constructor() { }
-    private state: Object; // Can be mutated because this.history has deep copy
+    private state: Object; // Can be mutated because this.history has deep copies, including current state
     private stateEnded: Boolean = false; // Is set to true when the app has ended functionality
-    private listeners: Function[] = []; // Can be mutated because this.history has deep copy
+    private listeners: Function[] = []; // Can be mutated because this.history has deep copies, including current listeners array
     private reducers: Function[] = []; // Array of functions that mutate state
-    private history: Object[] = []; // Should always contain deep copy of most recent state, listeners, and reducers arrays
+    private history: Object[] = []; // Should always contain deep copies of states and listeners arrays, including current of each
 
     deepClone(obj: Object) {
         const newObj = Array.isArray(obj) ? [] : {}
@@ -18,41 +18,35 @@ export class StoreService {
         return newObj
     }
 
-    cloneArray(array: Function[]) {
-        const newArr = []
-        for (let n in array) newArr[n] = array[n]
-        return newArr
-    }
-
     saveHistory(type: string): void {
         this.history.push({
             change: type,
             state: this.deepClone(this.state),
-            listeners: this.cloneArray(this.listeners)
+            listeners: this.deepClone(this.listeners)
         })
     }
 
-    addReducer(reducer: Function) {
+    addReducer(reducer: Function): void {
         this.reducers = this.reducers.concat(reducer);
         if (this.reducers.length === 1) {
             this.state = this.reducers[0](null, {})
             this.saveHistory('State')
+            console.log("StoreService.DISPATCH: State History is", this.history.filter(h => h['change'] === 'State'))
         }
     }
 
-    getState() { return this.state }
+    getState(): Object { return this.state }
 
-    dispatch(action: Object) {
+    dispatch(action: Object): Object {
         if (this.stateEnded) return "State can no longer be mutated"
         this.state = this.reducers.reduce((state, reducer) => { return reducer(state, action) }, this.deepClone(this.state));
         this.saveHistory('State')
         this.listeners.forEach(l => l()) //loop through the array of listeners
         console.log("StoreService.DISPATCH: State History is", this.history.filter(h => h['change'] === 'State'))
-        console.log("StoreService.DISPATCH: New State is", this.state)
         return this.state;
     }
 
-    subscribe(fn) {
+    subscribe(fn: Function): Function {
         this.listeners = this.listeners.concat(fn); // not altering the original listeners array.
         this.saveHistory('Listener')
         return () => {

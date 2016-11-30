@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 // Purpose of Store is to have one state container for the whole app.
-// Only ADDREDUCER, GETSTATE, DISPATCH, and SUBSCRIBE should be invoked from outside this component
+// Only GETSTATE, DISPATCH, and SUBSCRIBE should be invoked from outside this component
 
 @Injectable()
 export class StoreService {
@@ -10,7 +10,7 @@ export class StoreService {
     private stateEnded: Boolean = false; // Is set to true when the app has ended functionality
     private listeners: Function[] = []; // Can be mutated because this.history has deep copy
     private reducers: Function[] = []; // Array of functions that mutate state
-    private history: Object[] = []; // Should always contain deep copy of most recent state and listeners array
+    private history: Object[] = []; // Should always contain deep copy of most recent state, listeners, and reducers arrays
 
     deepClone(obj: Object) {
         const newObj = Array.isArray(obj) ? [] : {}
@@ -18,13 +18,19 @@ export class StoreService {
         return newObj
     }
 
-    cloneListeners(array: Function[]) {
+    cloneArray(array: Function[]) {
         const newArr = []
         for (let n in array) newArr[n] = array[n]
         return newArr
     }
 
-    saveHistory(type: string): void { this.history.push({ change: type, state: this.deepClone(this.state), listeners: this.cloneListeners(this.listeners) }) }
+    saveHistory(type: string): void {
+        this.history.push({
+            change: type,
+            state: this.deepClone(this.state),
+            listeners: this.cloneArray(this.listeners)
+        })
+    }
 
     addReducer(reducer: Function) {
         this.reducers = this.reducers.concat(reducer);
@@ -48,10 +54,10 @@ export class StoreService {
 
     subscribe(fn) {
         this.listeners = this.listeners.concat(fn); // not altering the original listeners array.
-        this.saveHistory('Listeners')
+        this.saveHistory('Listener')
         return () => {
             this.listeners = this.listeners.filter(func => func !== fn)
-            this.saveHistory('Listeners')
+            this.saveHistory('Listener')
         }
     }
 }

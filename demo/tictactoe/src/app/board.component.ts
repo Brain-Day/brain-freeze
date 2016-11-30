@@ -18,6 +18,8 @@ import { StoreService } from './store.service';
         margin-bottom: 50px;
     }
     .square {
+        padding: 0;
+        margin: 0;
         border: 1px solid black;
         display: inline-block;
         width: 250px;
@@ -82,7 +84,7 @@ export class BoardComponent implements OnInit {
         this.store.subscribe(() => {
             if (!this.store.getState()['winner']) return
             this.store.dispatch({ lock: true })
-            const msg = `Player ${this.store.getState()['winner']} won!!!`
+            const msg = this.store.getState()['winner'] === 'X' ? `Sexy Eyes won!!!` : `Dean Code won!!!`
             console.log(msg)
             document.getElementById('header').innerHTML = `<h1>${msg}</h1>`
         });

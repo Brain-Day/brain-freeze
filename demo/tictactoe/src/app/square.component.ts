@@ -2,23 +2,26 @@ import { Component, OnInit, Input } from '@angular/core';
 import { StoreService } from './store.service';
 
 @Component({
-  selector: 'square',
-  template: `
-    <p>{{value}}</p>
+    selector: 'square',
+    template: `
+    <img src="{{imgUrl}}" width="250px" height="250px">
   `
 })
 export class SquareComponent implements OnInit {
-  @Input() id: number;
-  private value: string;
-  constructor(private store: StoreService) { }
-  ngOnInit(): void {
-      this.value = this.store.getState()['board'][this.id]
-      this.store.subscribe(() => { this.value = this.store.getState()['board'][this.id] })
-  }
+    @Input() id: number;
+    private value: string;
+    private imgUrl: string;
+    constructor(private store: StoreService) { }
+    ngOnInit(): void {
+        this.value = this.store.getState()['board'][this.id]
+        this.imgUrl = `./cesar.jpg`
+        this.store.subscribe(() => {
+            this.value = this.store.getState()['board'][this.id]
+            this.imgUrl = this.value === '-'
+                ? `./cesar.jpg`
+                : this.value === 'X'
+                    ? `./martin.jpg`
+                    : `./dean.jpg`
+        })
+    }
 }
-
-// this.value === '-'
-//               ? `<p>'-'</p>`
-//               : this.value === 'X'
-//                   ? `<img src="http://www.drodd.com/images15/letter-x14.jpg" >`
-//                   : `<img src="http://images.clipartpanda.com/zero-clipart-clipart-0123_Vector_Clipart.png">`,

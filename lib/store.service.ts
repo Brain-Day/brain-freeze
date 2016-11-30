@@ -1,25 +1,16 @@
 import { Injectable } from '@angular/core';
 
 // Purpose of Store is to have one state container for the whole app.
-// Only GETSTATE, DISPATCH, and SUBSCRIBE should be invoked from outside this component
+// Only ADDREDUCER, GETSTATE, DISPATCH, and SUBSCRIBE should be invoked from outside this component
 
 @Injectable()
 export class StoreService {
     constructor() { }
-    private state: Object; // Can be mutated because this.stateHistory has deep copy
-    private stateEnded: Boolean = false;
-    private listeners: Function[] = [];
+    private state: Object; // Can be mutated because this.history has deep copy
+    private stateEnded: Boolean = false; // Is set to true when the app has ended functionality
+    private listeners: Function[] = []; // Can be mutated because this.history has deep copy
+    private reducers: Function[] = []; // Array of functions that mutate state
     private history: Object[] = []; // Should always contain deep copy of most recent state and listeners array
-
-    // Pass reducers into the addReducer function. Each reducer must take in a state and an action object, and then return a new state.
-    // Use deepClone (provided here) to copy state into newState
-    // Example format: function reducer(state, action) {
-    //             let newState = deepClone(state);
-    //             ... logic ...
-    //             return newState;
-    //         }
-
-    private reducers: Function[] = [];
 
     deepClone(obj: Object) {
         const newObj = Array.isArray(obj) ? [] : {}

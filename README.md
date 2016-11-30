@@ -1,8 +1,6 @@
 # Brain Day State Service
 ## Synopsis
 
-At the top of the file there should be a short introduction and/ or overview that explains **what** the project is. This description should match descriptions added for package managers (Gemspec, package.json, etc.)
-
 An injectable service to provide a familiar and intuitive state container catered to Angular2.
 
 ## Code Example

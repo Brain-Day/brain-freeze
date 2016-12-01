@@ -28,7 +28,7 @@ import { StoreService } from 'bdss';
   ```
 ## API Reference
   ```js
-  deepClone(obj: Object, freeze: Boolean): Object: method on the store service to create a deep clone of the state. Returns a deep clone and optionally deep frozen copy of an object.
+ deepClone(obj: Object, freeze: Boolean): Object: method on the store service to create a deep clone of the state. Returns a deep clone and optionally deep frozen copy of an object.
 
   
  deepCompare(obj1: Object, obj2: Object): Boolean:  Compares two objects at every level and returns boolean indicating if they are the same.
@@ -55,8 +55,8 @@ import { StoreService } from 'bdss';
 
 To Come ...
 ## Contributors
-github.com/eviscerare
-github.com/soleiluwedu
+github.com/eviscerare,
+github.com/soleiluwedu,
 github.com/ryanbas21
 ## License
 MIT

@@ -27,8 +27,29 @@ import { StoreService } from 'bdss';
   npm install bdss --save;
   ```
 ## API Reference
+  deepClone(obj: Object, freeze: Boolean): Object: method on the store service to create a deep clone of the state. Returns a deep clone and optionally deep frozen copy of an object.
 
-To Come...
+  
+ deepCompare(obj1: Object, obj2: Object): Boolean:  Compares two objects at every level and returns boolean indicating if they are the same.
+
+ getNestedValue(keyPath: String, obj: Object): any : Takes dot notation key path and returns bracket format key path.
+   
+ lockedKeysChanged(obj: Object): String[] :  Returns array of locked keys that mutation attempts were made against.
+
+  saveHistory(type: string): void : Saves a history of state in the form of an array of deep cloned, deep frozen copies.  
+
+  addReducer(reducer: Function): void :Adds reducers to be run on state on invokation of DISPATCH.  
+  getState: method to get current state of application
+  
+  getState(): Object { return this.deepClone(this.state, false) }:     // Returns a deep clone of state.
+  
+  dispatch(action: Object): Object: Takes in action objects and checks for lock related commands before running state through reducers.
+  
+  subscribe(fn: Function): Function : Subscribes a listener function to state changes and returns a function to unsubscribe the same listener function.
+
+
+
+  
 ## Tests
 
 To Come ...

@@ -95,7 +95,7 @@ export class BoardComponent implements OnInit {
                 , 'text-align: center'
                 , 'font-weight: bold'
             ].join(';');
-            const msg = this.store.getState()['winner'] === 'X' ? `Sexy Eyes won!!!` : `Dean Code won!!!`
+            const msg = this.store.getState()['winner'] === 'X' ? `Player X won!!!` : `Player O won!!!`
             console.log('%c' + `${msg}`, winStyles)
             document.getElementById('header').innerHTML = `<h1>${msg}</h1>`
         });

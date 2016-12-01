@@ -14,14 +14,14 @@ export class SquareComponent implements OnInit {
     constructor(private store: StoreService) { }
     ngOnInit(): void {
         this.value = this.store.getState()['board'][this.id]
-        this.imgUrl = `./cesar.jpg`
+        this.imgUrl = `./transparent.png`
         this.store.subscribe(() => {
             this.value = this.store.getState()['board'][this.id]
             this.imgUrl = this.value === '-'
-                ? `./cesar.jpg`
+                ? `./transparent.png`
                 : this.value === 'X'
-                    ? `./martin.jpg`
-                    : `./dean.jpg`
+                    ? `./X.png`
+                    : `./O.png`
         })
     }
 }

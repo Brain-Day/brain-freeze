@@ -27,6 +27,7 @@ import { StoreService } from 'bdss';
   npm install bdss --save;
   ```
 ## API Reference
+  ```js
   deepClone(obj: Object, freeze: Boolean): Object: method on the store service to create a deep clone of the state. Returns a deep clone and optionally deep frozen copy of an object.
 
   
@@ -47,7 +48,7 @@ import { StoreService } from 'bdss';
   
   subscribe(fn: Function): Function : Subscribes a listener function to state changes and returns a function to unsubscribe the same listener function.
 
-
+ ```
 
   
 ## Tests

@@ -69,10 +69,13 @@ export class BoardComponent implements OnInit {
             // Possible commands for StoreService.dispatch to use
             switch (action.type) {
                 case 'GO':
-                    if (state.winner || state.board[action.id] !== '-') break
-                    state.board[action.id] = state.turn
+                    if (!state.winner) state.board[action.id] = state.turn
+                    break
+                case 'SWITCH':
+                    state.turn = state.turn === 'X' ? 'O' : 'X'
+                    break
+                case 'CHECK_WIN':
                     if (winningCombos[action.id].some(e => e.every(i => state.board[i] === state.turn))) state.winner = state.turn
-                    else state.turn = state.turn === 'X' ? 'O' : 'X'
                     break
                 default:
                     break
@@ -80,8 +83,9 @@ export class BoardComponent implements OnInit {
             // Returning state
             return state
         });
-        this.squares = this.store.getState()['board'];
+        this.squares = this.store.getState()['board']
         this.store.subscribe(() => {
+            // End game if we have a winner
             if (!this.store.getState()['winner']) return
             this.store.dispatch({ lockState: true })
             const winStyles = [
@@ -94,10 +98,10 @@ export class BoardComponent implements OnInit {
                 , 'line-height: 40px'
                 , 'text-align: center'
                 , 'font-weight: bold'
-            ].join(';');
+            ].join(';')
             const msg = this.store.getState()['winner'] === 'X' ? `Player X won!!!` : `Player O won!!!`
             console.log('%c' + `${msg}`, winStyles)
             document.getElementById('header').innerHTML = `<h1>${msg}</h1>`
-        });
+        })
     }
 }

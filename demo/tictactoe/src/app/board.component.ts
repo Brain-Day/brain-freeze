@@ -38,55 +38,54 @@ import { StoreService } from './store.service';
 export class BoardComponent implements OnInit {
     private squares: string[];
     constructor(private store: StoreService) { }
-    go(id: number): void { this.store.dispatch({ type: 'GO', id: id }) }
+    go(id: number): void { this.store.dispatch({ type: 'GO', id: id, turn: this.store.getState()['turn'] }) }
     ngOnInit(): void {
-        this.store.addReducer((state, action) => {
-            // Initial state
-            if (!state) {
-                return {
-                    turn: 'X',
-                    board: [
-                        '-', '-', '-',
-                        '-', '-', '-',
-                        '-', '-', '-'
-                    ],
-                    winner: ''
-                }
-            }
 
-            const winningCombos = {
-                0: [[1, 2], [3, 6], [4, 8]],
-                1: [[0, 2], [4, 7]],
-                2: [[0, 1], [4, 6], [5, 8]],
-                3: [[0, 6], [4, 5]],
-                4: [[0, 8], [1, 7], [2, 6]],
-                5: [[2, 8], [3, 4]],
-                6: [[0, 3], [2, 4], [7, 8]],
-                7: [[1, 4], [6, 8]],
-                8: [[0, 4], [2, 5], [6, 7]]
-            }
-
-            // Possible commands for StoreService.dispatch to use
-            switch (action.type) {
-                case 'GO':
-                    if (!state.winner) state.board[action.id] = state.turn
-                    break
+        const turn = (state: String, action: Object): String => {
+            if (!state) return 'X'
+            switch (action['type']) {
                 case 'SWITCH':
-                    state.turn = state.turn === 'X' ? 'O' : 'X'
-                    break
-                case 'CHECK_WIN':
-                    if (winningCombos[action.id].some(e => e.every(i => state.board[i] === state.turn))) state.winner = state.turn
-                    break
+                    return state === 'X' ? 'O' : 'X'
                 default:
-                    break
+                    return state
             }
-            // Returning state
-            return state
-        });
+        }
+
+        const board = (state: String[], action: Object): String[] => {
+            if (!state) return [
+                    '-', '-', '-',
+                    '-', '-', '-',
+                    '-', '-', '-'
+                ]
+            switch (action['type']) {
+                case 'GO':
+                    state[action['id']] = action['turn']
+                    return state
+                default:
+                    return state
+            }
+        }
+
+        const winner = (state: String, action: Object): String => {
+            switch (action['type']) {
+                case 'WIN':
+                    console.log("WIN!!!")
+                    return action['player']
+                default:
+                    return ''
+            }
+        }
+
+        this.store.combineReducers({
+            turn,
+            board,
+            winner
+        })
+
         this.squares = this.store.getState()['board']
-        this.store.subscribe(() => {
+
+        const unsub = this.store.subscribe((winningPlayer): void => {
             // End game if we have a winner
-            if (!this.store.getState()['winner']) return
             this.store.dispatch({ lockState: true })
             const winStyles = [
                 'background: linear-gradient(#FF0000, #FFBB66)'
@@ -99,9 +98,11 @@ export class BoardComponent implements OnInit {
                 , 'text-align: center'
                 , 'font-weight: bold'
             ].join(';')
-            const msg = this.store.getState()['winner'] === 'X' ? `Player X won!!!` : `Player O won!!!`
+            const msg = winningPlayer === 'X' ? `Player X won!!!` : `Player O won!!!`
             console.log('%c' + `${msg}`, winStyles)
             document.getElementById('header').innerHTML = `<h1>${msg}</h1>`
-        })
+            unsub()
+        }, `winner`)
+
     }
 }

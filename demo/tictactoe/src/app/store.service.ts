@@ -38,8 +38,9 @@ export class StoreService {
         if (typeof obj1 !== typeof obj2) return false
         if (typeof obj1 !== 'object') return obj1 === obj2
         if (Array.isArray(obj1) !== Array.isArray(obj2)) return false
-        for (let n1 in obj1) if (!this.deepCompare(obj1[n1], obj2[n1])) return false
+        for (let n1 in obj1) if (!(n1 in obj2)) return false
         for (let n2 in obj2) if (!(n2 in obj1)) return false
+        for (let n in obj1) if (!this.deepCompare(obj1[n], obj2[n])) return false
         return true
     }
 

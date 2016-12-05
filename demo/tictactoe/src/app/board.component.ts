@@ -75,7 +75,7 @@ export class BoardComponent implements OnInit {
                     return ''
             }
         }
-
+        this.store.dispatch({ devMode: false })
         this.store.combineReducers({
             turn,
             board,

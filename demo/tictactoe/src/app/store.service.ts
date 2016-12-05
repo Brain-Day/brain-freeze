@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class StoreService {
     constructor() { }
-    private devMode: Boolean = false // When turned off, history is not recorded to improve performance.
+    private devMode: Boolean = true // When turned off, history is not recorded to improve performance.
     private state: Object // Can be mutated because this.history has deep copies, including current state.
     private stateLocked: Boolean = false // When set to true (triggered by action.lock === true), state cannot be mutated until it is unlocked (triggered by action.unlock === true).
     private lockedKeys: String[] = [] // Partial locking. Contains array of state properties (in dot notation, even for arrays) that should be locked.
@@ -109,6 +109,17 @@ export class StoreService {
         console.groupCollapsed(`Store.DISPATCH: ${Object.keys(action).map(e => `${e}:${action[e]}`)}`)
         console.log(`Action object received:`)
         console.dir(action)
+
+        // Checking for Dev Mode command. If set to true, history is not saved and
+        // console.groupEnd is never called, putting all console logs in one group.
+        if ('devMode' in action) {
+            this.devMode = action['devMode']
+
+            // Only close console grouping to show console logs if in Dev Mode.
+            // Otherwise, don't close console grouping and collect console logs.
+            if (action['devMode'] === true) console.groupEnd()
+            return
+        }
 
         // Flagging specific keys for alert.
         if (action['alertKeys']) {

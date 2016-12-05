@@ -1,12 +1,12 @@
-# Brain Day State Service
+# Brain Freeze
 ## Synopsis
 
-An injectable service to provide a familiar and intuitive state container catered to Angular2.
+An injectable service to provide a familiar and intuitive state container catered to Angular 2.
 
 ## Code Example
 
 ```js
-import { StoreService } from 'bdss';
+import { StoreService } from 'brain-freeze';
 
   export class RenderTextComponent implements OnInit {
     private value: string;
@@ -20,14 +20,14 @@ import { StoreService } from 'bdss';
 }
 ```
 ## Motivation
-  To simplify state management in angular2.
+  To simplify state management in Angular 2.
 
 ## Installation
-  ```
-  npm install bdss --save;
-  ```
+```js
+npm i brain-freeze -S;
+```
 ## API Reference
-  ```js
+```js
   addReducer(reducer: Function): void :Adds reducers to be run on state on invokation of DISPATCH.  
   
   getState(): Object Returns a deep clone of state.
@@ -35,7 +35,7 @@ import { StoreService } from 'bdss';
   dispatch(action: Object): Object: Takes in action objects and checks for lock related commands before running state through reducers.
   
   subscribe(fn: Function): Function : Subscribes a listener function to state changes and returns a function to unsubscribe the same listener function.
- ```
+```
 
   
 ## Tests

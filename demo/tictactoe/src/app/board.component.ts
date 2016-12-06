@@ -42,7 +42,7 @@ export class BoardComponent implements OnInit {
     ngOnInit(): void {
 
         const turn = (state: String, action: Object): String => {
-            if (!state) return 'X'
+            if (state == null) return 'X'
             switch (action['type']) {
                 case 'SWITCH':
                     return state === 'X' ? 'O' : 'X'
@@ -53,14 +53,17 @@ export class BoardComponent implements OnInit {
 
         const board = (state: String[], action: Object): String[] => {
             if (!state) return [
-                    '-', '-', '-',
-                    '-', '-', '-',
-                    '-', '-', '-'
-                ]
+                '-', '-', '-',
+                '-', '-', '-',
+                '-', '-', '-'
+            ]
             switch (action['type']) {
                 case 'GO':
-                    state[action['id']] = action['turn']
-                    return state
+                    return [
+                        ...state.slice(0, action['id']),
+                        action['turn'],
+                        ...state.slice(action['id'] + 1)
+                    ]
                 default:
                     return state
             }
@@ -69,13 +72,14 @@ export class BoardComponent implements OnInit {
         const winner = (state: String, action: Object): String => {
             switch (action['type']) {
                 case 'WIN':
-                    console.log("WIN!!!")
                     return action['player']
                 default:
                     return ''
             }
         }
-        this.store.dispatch({ devMode: false })
+
+        this.store.dispatch({ mode: 'dev' })
+
         this.store.combineReducers({
             turn,
             board,

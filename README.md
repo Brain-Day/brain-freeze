@@ -37,8 +37,8 @@ subscribe(fn: Function): Function : Subscribes a listener function to state chan
 ## Tests
 To Come ...
 ## Contributors
-[![Image of Edward](https://avatars3.githubusercontent.com/u/10620846?v=3&s=460)](https://github.com/Eviscerare)
-[![Image of Thai](https://avatars3.githubusercontent.com/u/20631126?v=3&s=460)](https://github.com/soleiluwedu)
-[![Image of Ryan](https://avatars1.githubusercontent.com/u/18267769?v=3&s=460)](https://github.com/ryanbas21)
+[![Image of Edward](https://avatars3.githubusercontent.com/u/10620846?v=3&s=160)](https://github.com/Eviscerare)
+[![Image of Thai](https://avatars3.githubusercontent.com/u/20631126?v=3&s=160)](https://github.com/soleiluwedu)
+[![Image of Ryan](https://avatars1.githubusercontent.com/u/18267769?v=3&s=160)](https://github.com/ryanbas21)
 ## License
 MIT

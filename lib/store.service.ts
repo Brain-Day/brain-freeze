@@ -28,36 +28,44 @@ export class StoreService {
     return check ? type === check : type
   }
 
-  // Returns a deep clone and optionally deep frozen copy of an object.
+  // Returns a deep clone or a deep frozen copy of an object.
   deepClone(obj: Object, freeze: boolean = false): Object {
-    if (!(this.typeOf(obj) === ('object' || 'array'))) return obj
+    if (!this.typeOf(obj, 'object') && !this.typeOf(obj, 'array')) return obj
     const newObj = this.typeOf(obj, 'array') ? [] : {}
     for (let key in obj)
-      newObj[key] = this.typeOf(obj[key]) === ('object' || 'array') ? this.deepClone(obj[key]) : obj[key]
-    return freeze ? Object.freeze(newObj) : newObj;
+      newObj[key] = (this.typeOf(obj, 'object') || this.typeOf(obj, 'array')) ? this.deepClone(obj[key]) : obj[key]
+    return freeze ? Object.freeze(newObj) : newObj
   }
 
   // Compares two objects at every level and returns boolean indicating if they are the same.
-  deepCompare(obj1: Object, obj2: Object): Boolean {
-    if (typeof obj1 !== typeof obj2 || Array.isArray(obj1) !== Array.isArray(obj2)) return false
-    if (typeof obj1 !== 'object') return obj1 === obj2
-    for (let n1 in obj1) if (!(n1 in obj2)) return false
-    for (let n2 in obj2) if (!(n2 in obj1)) return false
-    for (let n in obj1) if (!this.deepCompare(obj1[n], obj2[n])) return false
+  deepCompare(obj1: Object, obj2: Object): boolean {
+    if (this.typeOf(obj1) !== this.typeOf(obj2)) return false
+    if (this.typeOf(obj1, 'function')) return obj1.toString() === obj2.toString()
+    if (!this.typeOf(obj1, 'object') && !this.typeOf(obj1, 'array')) return obj1 === obj2
+    if (Object.keys(obj1).sort().toString() !== Object.keys(obj2).sort().toString()) return false
+    for (let key in obj1) if (!this.deepCompare(obj1[key], obj2[key])) return false
     return true
   }
 
   // Takes dot notation key path and returns nested value
-  getNestedValue(obj: Object, keyPath: String): any { return eval(`obj['${keyPath.split(".").join("']['")}']`) }
+  getNestedValue(obj: Object, keyPath: string): any {
+    return eval(`obj['${keyPath.replace(/\./g, "']['")}']`)
+  }
 
-  // Returns array of all key paths in an object.
-  getAllKeys(obj: Object, keyPath: String = ''): String[] {
-    let keys = []
-    if (typeof obj !== 'object') return keys
-    for (let prop in obj) keys = keys
-      .concat(prop)
-      .concat(typeof obj[prop] === 'object' ? this.getAllKeys(obj[prop], prop) : [])
-    return keys.map(strPath => keyPath === '' ? strPath : `${keyPath}.${strPath}`)
+  // Returns array of all key paths in an object
+  getAllKeys(obj: Object, keyPath: string = null): Object {
+    if (!this.typeOf(obj, 'object') && !this.typeOf(obj, 'array')) return {}
+    const keyPaths = {}
+    const prefix = keyPath === null ? '' : `${keyPath}.`
+    for (let key in obj) {
+      keyPaths[`${prefix}${key}`] = true
+      if (this.typeOf(obj[key], 'object') || this.typeOf(obj[key], 'array')) {
+        for (let nestKey in this.getAllKeys(obj[key], `${prefix}${key}`)) {
+          keyPaths[nestKey] = true
+        }
+      }
+    }
+    return keyPaths
   }
 
   // Returns array of keys from obj1 that are not the same in obj2. Will not return

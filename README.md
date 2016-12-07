@@ -1,8 +1,10 @@
 # Brain Freeze
 ## Synopsis
-
 An injectable service to provide a familiar and intuitive state container catered to Angular 2.
-
+## Installation
+```js
+npm i brain-freeze --save;
+```
 ## Code
 ```js
 import { Component, OnInit } from '@angular/core';
@@ -20,10 +22,6 @@ export class RenderTextComponent implements OnInit {
   }
 }
 ```
-## Installation
-```js
-npm i brain-freeze -S;
-```
 ## API Reference
 ```js
 addReducer(reducer: Function): void :Adds reducers to be run on state on invokation of DISPATCH.  
@@ -37,8 +35,8 @@ subscribe(fn: Function): Function : Subscribes a listener function to state chan
 ## Tests
 To Come ...
 ## Contributors
-[![Image of Edward](https://avatars3.githubusercontent.com/u/10620846?v=3&s=160)](https://github.com/Eviscerare)
-[![Image of Thai](https://avatars3.githubusercontent.com/u/20631126?v=3&s=160)](https://github.com/soleiluwedu)
-[![Image of Ryan](https://avatars1.githubusercontent.com/u/18267769?v=3&s=160)](https://github.com/ryanbas21)
+[![Image of Edward](https://avatars3.githubusercontent.com/u/10620846?v=3&s=190)](https://github.com/Eviscerare)
+[![Image of Thai](https://avatars3.githubusercontent.com/u/20631126?v=3&s=190)](https://github.com/soleiluwedu)
+[![Image of Ryan](https://avatars1.githubusercontent.com/u/18267769?v=3&s=190)](https://github.com/ryanbas21)
 ## License
 MIT

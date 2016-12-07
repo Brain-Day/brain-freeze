@@ -154,11 +154,11 @@ export class StoreService {
 
     // Returns a deep clone and optionally deep frozen copy of an object.
     deepClone(obj: Object, freeze: boolean = false): Object {
-        if (!(this.typeOf(obj) === ('object' || 'array'))) return obj
+        if (!this.typeOf(obj, 'object') && !this.typeOf(obj, 'array')) return obj
         const newObj = this.typeOf(obj, 'array') ? [] : {}
         for (let key in obj)
-            newObj[key] = this.typeOf(obj[key]) === ('object' || 'array') ? this.deepClone(obj[key]) : obj[key]
-        return freeze ? Object.freeze(newObj) : newObj;
+            newObj[key] = (this.typeOf(obj, 'object') || this.typeOf(obj, 'array')) ? this.deepClone(obj[key]) : obj[key]
+        return freeze ? Object.freeze(newObj) : newObj
     }
 
     // Compares two objects at every level and returns boolean indicating if they are the same.
@@ -172,7 +172,9 @@ export class StoreService {
     }
 
     // Takes dot notation key path and returns nested value
-    getNestedValue(obj: Object, keyPath: string): any { return eval(`obj['${keyPath.split(".").join("']['")}']`) }
+    getNestedValue(obj: Object, keyPath: string): any {
+        return eval(`obj['${keyPath.replace(/\./g, "']['")}']`)
+    }
 
     // Returns array of all key paths in an object.
     getAllKeys(obj: Object, keyPath: string = null): Object {

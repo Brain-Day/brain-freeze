@@ -34,33 +34,37 @@ export class StoreService {
 
     // Compares two objects at every level and returns boolean indicating if they are the same.
     deepCompare(obj1: Object, obj2: Object): Boolean {
-        if (typeof obj1 !== typeof obj2) return false
+        if (typeof obj1 !== typeof obj2 || Array.isArray(obj1) !== Array.isArray(obj2)) return false
         if (typeof obj1 !== 'object') return obj1 === obj2
-        if (Array.isArray(obj1) !== Array.isArray(obj2)) return false
         for (let n1 in obj1) if (!(n1 in obj2)) return false
         for (let n2 in obj2) if (!(n2 in obj1)) return false
         for (let n in obj1) if (!this.deepCompare(obj1[n], obj2[n])) return false
         return true
     }
 
-    // Takes dot notation key path and returns bracket format key path.
-    getNestedValue(obj: Object, keyPath: String): any { return this.deepClone(eval(`obj${"['" + keyPath.split(".").join("']['") + "']"}`), false) }
+    // Takes dot notation key path and returns nested value
+    getNestedValue(obj: Object, keyPath: String): any { return eval(`obj['${keyPath.split(".").join("']['")}']`) }
 
     // Returns array of all key paths in an object.
     getAllKeys(obj: Object, keyPath: String = ''): String[] {
         let keys = []
         if (typeof obj !== 'object') return keys
-        for (let n in obj) keys = keys.concat(n).concat(typeof obj[n] === 'object' ? this.getAllKeys(obj[n], n) : [])
-        return keys.map(e => keyPath === '' ? e : `${keyPath}.${e}`)
+        for (let prop in obj) keys = keys
+            .concat(prop)
+            .concat(typeof obj[prop] === 'object' ? this.getAllKeys(obj[prop], prop) : [])
+        return keys.map(strPath => keyPath === '' ? strPath : `${keyPath}.${strPath}`)
     }
 
-    // Returns array of keys from obj1 that are not the same in obj2. Will not return keys from obj2 that are not in obj1.
+    // Returns array of keys from obj1 that are not the same in obj2. Will not return
+    // keys from obj2 that are not in obj1.
     keyPathsChanged(obj1: Object, obj2: Object): Object {
         const allKeyPaths1 = this.getAllKeys(obj1)
         const allKeyPaths2 = this.getAllKeys(obj2)
         const missingKeyPaths = allKeyPaths1.filter(keyPath => allKeyPaths2.indexOf(keyPath) === -1)
         const remainingKeyPaths = allKeyPaths1.filter(keyPath => allKeyPaths2.indexOf(keyPath) > -1)
         const changes = {}
+        const remainingKeyPathsLength = remainingKeyPaths.length
+    
         remainingKeyPaths.forEach(keyPath => {
             const val1 = this.getNestedValue(obj1, keyPath)
             const val2 = this.getNestedValue(obj2, keyPath)
@@ -180,7 +184,7 @@ export class StoreService {
                 console.groupEnd()
                 return
             }
-        }    
+        }
 
             // Checking for lockState command.
             if (action['lockState']) {

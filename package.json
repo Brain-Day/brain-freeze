@@ -1,0 +1,28 @@
+{
+  "name": "brain-freeze",
+  "version": "0.9.7",
+  "description": "Injectable Angular 2 service for state management",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Brain-Day/brain-freeze.git"
+  },
+  "keywords": [
+    "Angular 2",
+    "State",
+    "Redux",
+    "Freeze"
+  ],
+  "author": "Brain Day",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Brain-Day/brain-freeze/issues"
+  },
+  "homepage": "https://github.com/Brain-Day/brain-freeze#readme",
+  "dependencies": {
+    "@angular/core": "^2.2.4"
+  }
+}

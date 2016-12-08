@@ -244,9 +244,7 @@ export class StoreService {
 
         // If there were attempts to change locked keys, console log an array of the would-be affected locked keys and return a deep clone of state.
         const changedLockedKeys = {}
-        for (let key in this.lockedKeys) {
-          if (key in changedKeyPathsHistory) changedLockedKeys[key] = changedKeyPathsHistory[key]
-        }
+        for (let key in this.lockedKeys) if (key in changedKeyPathsHistory) changedLockedKeys[key] = changedKeyPathsHistory[key]
 
         if (Object.keys(changedLockedKeys).length) {
             if (this.mode === 'dev' || this.mode === 'devlite') {

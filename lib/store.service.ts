@@ -253,6 +253,7 @@ export class StoreService {
       return
     }
 
+<<<<<<< HEAD
     // Return current state if reducers did not change state.
     if (this.deepCompare(this.state, newState)) {
       if (this.mode === 'dev' || this.mode === 'devlite') {
@@ -264,6 +265,19 @@ export class StoreService {
 
     // Mutate state, update history, and return new state if reducers changed state.
     this.state = newState
+=======
+        // If there were attempts to change locked keys, console log an array of the would-be affected locked keys and return a deep clone of state.
+        const changedLockedKeys = {}
+        for (let key in this.lockedKeys) if (key in changedKeyPathsHistory) changedLockedKeys[key] = changedKeyPathsHistory[key]
+
+        if (Object.keys(changedLockedKeys).length) {
+            if (this.mode === 'dev' || this.mode === 'devlite') {
+                console.log("%cState change operation rejected: Cannot change locked keys:", this.styles['cannotMutateState'], ...changedLockedKeys)
+                console.groupEnd()
+            }
+            return
+        }
+>>>>>>> 3eaa63e6a69c39e07a957aab01da4c2f8f8a3def
 
     if (this.mode === 'dev' || this.mode === 'devlite') console.groupEnd()
 

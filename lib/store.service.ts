@@ -245,10 +245,10 @@ export class StoreService {
         // If there were attempts to change locked keys, console log an array of the would-be affected locked keys and return a deep clone of state.
         const changedLockedKeys = {}
         for (let key in this.lockedKeys) if (key in changedKeyPathsHistory) changedLockedKeys[key] = changedKeyPathsHistory[key]
-
-        if (Object.keys(changedLockedKeys).length) {
+        const changedLockedKeysArray = Object.keys(changedLockedKeys);
+        if (changedLockedKeysArray.length) {
             if (this.mode === 'dev' || this.mode === 'devlite') {
-                console.log("%cState change operation rejected: Cannot change locked keys:", this.styles['cannotMutateState'], ...changedLockedKeys)
+                console.log("%cState change operation rejected: Cannot change locked keys:", this.styles['cannotMutateState'], ...changedLockedKeysArray)
                 console.groupEnd()
             }
             return
@@ -271,7 +271,7 @@ export class StoreService {
         this.saveHistory(action, { CHANGE_TYPE: 'STATE', KEYPATHS_CHANGED: changedKeyPathsHistory })
 
         // Loop through all arrays of partial listeners.
-        for (let keyPath in this.partialListeners)
+        for (var keyPath in this.partialListeners)
             if (changedKeyPaths.indexOf(keyPath) > -1)
                 this.partialListeners[keyPath].forEach(l => l(this.getNestedValue(this.state, keyPath)))
 

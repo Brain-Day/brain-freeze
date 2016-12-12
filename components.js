@@ -1,0 +1,1 @@
+exports.StoreService = require('./lib/store.service');

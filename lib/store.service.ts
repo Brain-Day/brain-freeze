@@ -300,7 +300,7 @@ export class StoreService {
           let newValue = this.deepClone(oldValue, false)
           if (!(nextLevel in changedKeyPaths)) changedKeyPaths[nextLevel] = { VALUE_BEFORE: oldValue, VALUE_AFTER: newValue }
           changedKeyPaths[nextLevel]['VALUE_AFTER'][remainingLevels] = this.deepClone(this.getNestedValue(newState, keyPath), false)
-          nextDotIndex = keyPath.slice(nextDotIndex + 1).indexOf('.')
+          nextDotIndex = keyPath.slice(nextDotIndex + 1).indexOf('.') + nextDotIndex + 1
           nextLevel = keyPath.slice(0, nextDotIndex)
           remainingLevels = keyPath.slice(nextDotIndex + 1)
         }
@@ -341,7 +341,7 @@ export class StoreService {
     this.saveHistory(action, { CHANGE_TYPE: 'STATE', KEYPATHS_CHANGED: changedKeyPaths })
 
     // Loop through all arrays of partial listeners attached to changed key paths.
-    for (let keyPath in changedKeyPaths) {
+    for (var keyPath in changedKeyPaths) {
       if (keyPath in this.partialListeners) {
         // Invokes partial listener and passes in object describing change: { VALUE_AFTER: [value after change], VALUE_BEFORE: [value before change] }
         this.partialListeners[keyPath].forEach(listener => listener(changedKeyPaths[keyPath]))

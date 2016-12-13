@@ -1,0 +1,1 @@
+export { StoreService } from './lib/store.service';

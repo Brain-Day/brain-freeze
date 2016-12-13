@@ -157,7 +157,7 @@ export class StoreService {
   // Keys in this object should be action.type strings. Values should be an array of
   // strings representing keyPaths that may be changed. If the value that may be changed
   // is an object or array, one keyPath to the object or array will suffice.
-  combineReducers(reducerObj: Object, actionsToKeyPathsObj: Object): void {
+  combineReducers(reducerObj: Object): void {
     // Saving reducer.
     this.mainReducer = reducerObj
 

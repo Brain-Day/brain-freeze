@@ -300,7 +300,7 @@ export class StoreService {
           let newValue = this.deepClone(oldValue, false)
           if (!(nextLevel in changedKeyPaths)) changedKeyPaths[nextLevel] = { VALUE_BEFORE: oldValue, VALUE_AFTER: newValue }
           changedKeyPaths[nextLevel]['VALUE_AFTER'][remainingLevels] = this.deepClone(this.getNestedValue(newState, keyPath), false)
-          nextDotIndex = keyPath.slice(nextDotIndex + 1).indexOf('.')
+          nextDotIndex = keyPath.slice(nextDotIndex + 1).indexOf('.') + nextDotIndex + 1
           nextLevel = keyPath.slice(0, nextDotIndex)
           remainingLevels = keyPath.slice(nextDotIndex + 1)
         }

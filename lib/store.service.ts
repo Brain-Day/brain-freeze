@@ -260,45 +260,48 @@ export class StoreService {
     const newState = this.deepClone(this.state, false)
     for (let key in this.mainReducer) newState[key] = this.mainReducer[key](newState[key], action)
 
-    // Begin building object describing all state changes and their respective key paths.
-    let changedKeyPaths = {}
+    // Checking key paths for changes.
+    const keyPathsToCheck = {}
 
-    // If action object specifies what key paths may have changed, check only those key paths.
+    // If KEYPATHS_TO_CHANGE property is found on action object, only check the passed-in key paths that have listeners attached.
     if (action['KEYPATHS_TO_CHANGE'] !== undefined) {
-      // KEYPATHS_TO_CHANGE should be an array or a string. Convert to array if just a string.
-      const keyPathsToChange = typeof action['KEYPATHS_TO_CHANGE'] === 'string' ? [action['KEYPATHS_TO_CHANGE']] : action['KEYPATHS_TO_CHANGE']
-      keyPathsToChange.forEach(keyPath => {
-        const oldValue = this.getNestedValue(this.state, keyPath)
-        const newValue = this.getNestedValue(newState, keyPath)
-        if (!this.deepCompare(oldValue, newValue)) {
-          changedKeyPaths[keyPath] = { VALUE_BEFORE: oldValue, VALUE_AFTER: newValue }
+      let keyPathsToChangeArray = typeof action['KEYPATHS_TO_CHANGE'] === 'string' ? [action['KEYPATHS_TO_CHANGE']] : action['KEYPATHS_TO_CHANGE']
+      keyPathsToChangeArray.forEach(keyPath => { if (keyPath in this.partialListeners) keyPathsToCheck[keyPath] = true })
+    }
+    // If KEYPATHS_TO_CHANGE property is NOT found on action object, check all key paths that have listeners attached.
+    else for (let keyPath in this.partialListeners) keyPathsToCheck[keyPath] = true
 
-          // Record key changes at every level of nesting BELOW the specified key paths that were changed (if any).
-          if (typeof oldValue === 'object') {
-            const subKeysChanged = this.keyPathsChanged(oldValue, newValue)
-            for (let subKey in subKeysChanged) changedKeyPaths[`${keyPath}.${subKey}`] = subKeysChanged[subKey]
-          }
-        }
-      })
-
-      // Record key changes at every level of nesting ABOVE the specified key paths that were changed (if any).
-      for (let keyPath in changedKeyPaths) {
-        let nextDotIndex = keyPath.indexOf('.')
-        let nextLevel = keyPath.slice(0, nextDotIndex)
-        let remainingLevels = keyPath.slice(nextDotIndex + 1)
-        while (nextDotIndex > -1) {
-          const oldValue = this.getNestedValue(this.state, nextLevel)
-          const newValue = this.getNestedValue(newState, nextLevel)
-          if (!(nextLevel in changedKeyPaths)) changedKeyPaths[nextLevel] = { VALUE_BEFORE: oldValue, VALUE_AFTER: newValue }
-          const testNextDotIndex = keyPath.slice(nextDotIndex + 1).indexOf('.')
-          nextDotIndex = testNextDotIndex === -1 ? -1 : testNextDotIndex + nextDotIndex + 1
-          nextLevel = keyPath.slice(0, nextDotIndex)
-          remainingLevels = keyPath.slice(nextDotIndex + 1)
+    // Recording changes.
+    const changedKeyPaths = {}
+    for (let keyPath in keyPathsToCheck) {
+      const oldValue = this.getNestedValue(this.state, keyPath)
+      const newValue = this.getNestedValue(newState, keyPath)
+      if (!this.deepCompare(oldValue, newValue)) {
+        changedKeyPaths[keyPath] = { VALUE_BEFORE: oldValue, VALUE_AFTER: newValue }
+        // Record key changes at every level of nesting BELOW the specified key paths that were changed (if any).
+        // this.keyPathsChanged will handle every level of nesting below `keyPath`, so no need to iterate.
+        if (typeof oldValue === 'object') {
+          const subKeysChanged = this.keyPathsChanged(oldValue, newValue)
+          for (let subKey in subKeysChanged) changedKeyPaths[`${keyPath}.${subKey}`] = subKeysChanged[subKey]
         }
       }
     }
-    // If no key paths specified, only check entire state object IF commanded by presence of action['checkKeys'].
-    else if (action['type'] !== undefined && action['checkKeys']) changedKeyPaths = this.keyPathsChanged(this.state, newState)
+
+    // Record key changes at every level of nesting ABOVE the specified key paths that were changed (if any).
+    for (let keyPath in changedKeyPaths) {
+      let nextDotIndex = keyPath.indexOf('.')
+      let nextLevel = keyPath.slice(0, nextDotIndex)
+      let remainingLevels = keyPath.slice(nextDotIndex + 1)
+      while (nextDotIndex > -1) {
+        const oldValue = this.getNestedValue(this.state, nextLevel)
+        const newValue = this.getNestedValue(newState, nextLevel)
+        if (!(nextLevel in changedKeyPaths)) changedKeyPaths[nextLevel] = { VALUE_BEFORE: oldValue, VALUE_AFTER: newValue }
+        const testNextDotIndex = keyPath.slice(nextDotIndex + 1).indexOf('.')
+        nextDotIndex = testNextDotIndex === -1 ? -1 : testNextDotIndex + nextDotIndex + 1
+        nextLevel = keyPath.slice(0, nextDotIndex)
+        remainingLevels = keyPath.slice(nextDotIndex + 1)
+      }
+    }
 
     // If there were attempts to change locked keys, console log an array of the would-be affected
     // locked keys and return a deep clone of state.
@@ -309,15 +312,6 @@ export class StoreService {
     if (changedLockedKeys.length) {
       if (this.mode === 'dev' || this.mode === 'devlite') {
         console.log("State change operation rejected: Cannot change locked keys:", ...changedLockedKeys)
-        console.groupEnd()
-      }
-      return
-    }
-
-    // If reducers did not change state.
-    if (!Object.keys(changedKeyPaths).length) {
-      if (this.mode === 'dev' || this.mode === 'devlite') {
-        console.log("State unchanged by reducers: History not updated.")
         console.groupEnd()
       }
       return

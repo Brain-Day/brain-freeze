@@ -14,12 +14,6 @@ export class StoreService {
   // Current state.  
   private state: Object
 
-<<<<<<< HEAD
-=======
-  // Flattened model of state. Keys are descriptive and map to specific keys in nested state object.
-  private flatState: Object
-
->>>>>>> b402b0cc2a73f2a50bc528864757a14b5088402a
   // When set to true (triggered by presence of 'lockState' property on action object), state cannot
   // be mutated until it is unlocked (triggered by presence of 'unlockState' property on action object).
   private stateLocked: boolean = false
@@ -89,11 +83,7 @@ export class StoreService {
   // Returns array of keys from obj1 that are not the same in obj2. Will not return keys from obj2 that are not in obj1.
   keyPathsChanged(obj1: Object, obj2: Object): Object {
     if (typeof obj1 !== 'object') {
-<<<<<<< HEAD
       if (obj1 !== obj2) return { VALUE_BEFORE: obj1, VALUE_AFTER: obj2 }
-=======
-      if (obj1 !== obj2) return { VALUE_BEFORE: obj1, VALUE_AFTER: this.deepClone(obj2, false) }
->>>>>>> b402b0cc2a73f2a50bc528864757a14b5088402a
       return null
     }
     const allKeyPaths1 = this.getAllKeys(obj1)
@@ -129,7 +119,6 @@ export class StoreService {
   // Saves a history of state in the form of an array of deep cloned, deep frozen copies.
   saveHistory(action: Object, changes: Object): void {
     const newHistoryObj = {}
-<<<<<<< HEAD
     newHistoryObj['ACTION'] = action
     if (this.mode.indexOf('dev') === 0) {
       if (this.mode === 'dev') {
@@ -142,20 +131,6 @@ export class StoreService {
       }
       newHistoryObj['ACTION'] = action
       newHistoryObj['CHANGES'] = changes
-=======
-    newHistoryObj['ACTION'] = this.deepClone(action, true)
-    if (this.mode.indexOf('dev') === 0) {
-      if (this.mode === 'dev') {
-        newHistoryObj['CURRENT_LISTENERS'] = {
-          GLOBAL: this.deepClone(this.globalListeners, true),
-          PARTIAL: this.deepClone(this.partialListeners, true)
-        }
-        newHistoryObj['CURRENT_LOCKED_KEYS'] = this.deepClone(this.lockedKeys, true)
-        newHistoryObj['STATE'] = this.deepClone(this.state, true)
-      }
-      newHistoryObj['ACTION'] = this.deepClone(action, true)
-      newHistoryObj['CHANGES'] = this.deepClone(changes, true)
->>>>>>> b402b0cc2a73f2a50bc528864757a14b5088402a
       console.groupCollapsed(`Store.SAVEHISTORY: ${changes['CHANGE_TYPE']}`)
       console.dir(this.history.filter(h => h['CHANGES']['CHANGE_TYPE'] === `${changes['CHANGE_TYPE']}`))
       console.groupEnd()
@@ -296,11 +271,7 @@ export class StoreService {
         const oldValue = this.getNestedValue(this.state, keyPath)
         const newValue = this.getNestedValue(newState, keyPath)
         if (!this.deepCompare(oldValue, newValue)) {
-<<<<<<< HEAD
           changedKeyPaths[keyPath] = { VALUE_BEFORE: oldValue, VALUE_AFTER: newValue }
-=======
-          changedKeyPaths[keyPath] = { VALUE_BEFORE: this.deepClone(oldValue, false), VALUE_AFTER: this.deepClone(newValue, false) }
->>>>>>> b402b0cc2a73f2a50bc528864757a14b5088402a
 
           // Record key changes at every level of nesting BELOW the specified key paths that were changed (if any).
           if (typeof oldValue === 'object') {
@@ -316,13 +287,8 @@ export class StoreService {
         let nextLevel = keyPath.slice(0, nextDotIndex)
         let remainingLevels = keyPath.slice(nextDotIndex + 1)
         while (nextDotIndex > -1) {
-<<<<<<< HEAD
           const oldValue = this.getNestedValue(this.state, nextLevel)
           const newValue = this.getNestedValue(newState, nextLevel)
-=======
-          const oldValue = this.deepClone(this.getNestedValue(this.state, nextLevel), false)
-          const newValue = this.deepClone(this.getNestedValue(newState, nextLevel), false)
->>>>>>> b402b0cc2a73f2a50bc528864757a14b5088402a
           if (!(nextLevel in changedKeyPaths)) changedKeyPaths[nextLevel] = { VALUE_BEFORE: oldValue, VALUE_AFTER: newValue }
           const testNextDotIndex = keyPath.slice(nextDotIndex + 1).indexOf('.')
           nextDotIndex = testNextDotIndex === -1 ? -1 : testNextDotIndex + nextDotIndex + 1

@@ -6,8 +6,7 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class StoreService {
 
-  // Set to 'dev' to save action objects, change objects, listener arrays, and staqte objects.
-  // Set to 'devlite' to save change objects and action objects.
+  // Set to 'dev' to save action objects, listener arrays, locked key path arrays, and state objects.
   // Set to anything else to save only action objects.
   private mode: string = 'dev'
 
@@ -19,7 +18,7 @@ export class StoreService {
   private stateLocked: boolean = false
 
   // Partial locking. Contains array of state properties (in dot notation, even for arrays) that should be locked.
-  private lockedKeys: Object = {}
+  private lockedKeyPaths: Object = {}
 
   // Array of listeners to be trigger on all state changes.
   private globalListeners: Function[] = []
@@ -30,8 +29,8 @@ export class StoreService {
   // Object in the same shape of desired state object.
   private mainReducer: Object
 
-  // Should contain deep copies of action objects (all modes), change objects (dev and devlite modes only),
-  // state objects (dev mode only), and current listener arrays (dev mode only).
+  // Should contain copies of action objects (all modes), listener arrays (dev mode only),
+  // and locked key path arrays (dev mode only).
   private history: Object[] = []
 
   // Return either type of input or a Boolean of whether or not input matches a given type
@@ -44,8 +43,7 @@ export class StoreService {
   deepClone(obj: Object, freeze: boolean = false): Object {
     if (!this.typeOf(obj, 'object') && !this.typeOf(obj, 'array')) return obj
     const newObj = this.typeOf(obj, 'array') ? [] : {}
-    for (let key in obj)
-      newObj[key] = (this.typeOf(obj, 'object') || this.typeOf(obj, 'array')) ? this.deepClone(obj[key]) : obj[key]
+    for (let key in obj) newObj[key] = (this.typeOf(obj, 'object') || this.typeOf(obj, 'array')) ? this.deepClone(obj[key]) : obj[key]
     return freeze ? Object.freeze(newObj) : newObj
   }
 
@@ -91,48 +89,45 @@ export class StoreService {
     const changedKeyPaths = {}
     const needToCheck = {}
     // Separating key paths in obj1 into two groups: Found in obj2, and not found in obj2.
-    for (let key in allKeyPaths1) {
+    for (let keyPath in allKeyPaths1) {
       // Key path found in obj2. Saving it to deep compare later in this function.
-      if (key in allKeyPaths2) needToCheck[key] = true
+      if (keyPath in allKeyPaths2) needToCheck[keyPath] = true
       // Key path not found in obj2. Record as changed to undefined.
-      else changedKeyPaths[key] = { VALUE_BEFORE: this.getNestedValue(obj1, key), VALUE_AFTER: undefined }
+      else changedKeyPaths[keyPath] = { VALUE_BEFORE: this.getNestedValue(obj1, keyPath), VALUE_AFTER: undefined }
     }
-    // Deep comparing keys that were found in obj2.
-    for (let key in needToCheck) {
-      const val1 = this.getNestedValue(obj1, key)
-      const val2 = this.getNestedValue(obj2, key)
+    // Deep comparing key paths in obj1 that were found in obj2.
+    for (let keyPath in needToCheck) {
+      const val1 = this.getNestedValue(obj1, keyPath)
+      const val2 = this.getNestedValue(obj2, keyPath)
       // Values are the same.
       if (this.deepCompare(val1, val2)) {
         // If key path passes deep compare check, then all key paths part branching from this key path do not need to be checked.
         for (let lookKey in needToCheck) {
           const firstDotIndex = lookKey.indexOf('.')
-          if (firstDotIndex !== -1 && lookKey.slice(0, firstDotIndex) === key) delete needToCheck[lookKey]
+          if (firstDotIndex !== -1 && lookKey.slice(0, firstDotIndex) === keyPath) delete needToCheck[lookKey]
         }
       }
       // Values are not the same.
-      else changedKeyPaths[key] = { VALUE_BEFORE: val1, VALUE_AFTER: val2 }
+      else changedKeyPaths[keyPath] = { VALUE_BEFORE: val1, VALUE_AFTER: val2 }
     }
     // Returning object describing changes. Keys are key paths that have changed. Values are objects with VALUE_AFTER and VALUE_BEFORE.
     return changedKeyPaths
   }
 
   // Saves a history of state in the form of an array of deep cloned, deep frozen copies.
-  saveHistory(action: Object, changes: Object): void {
+  saveHistory(action: Object, changeType: string): void {
     const newHistoryObj = {}
+    newHistoryObj['CHANGE_TYPE'] = changeType
     newHistoryObj['ACTION'] = action
-    if (this.mode.indexOf('dev') === 0) {
-      if (this.mode === 'dev') {
-        newHistoryObj['CURRENT_LISTENERS'] = {
-          GLOBAL: this.globalListeners,
-          PARTIAL: this.partialListeners
-        }
-        newHistoryObj['CURRENT_LOCKED_KEYS'] = this.lockedKeys
-        newHistoryObj['STATE'] = this.state
+    if (this.mode === 'dev') {
+      newHistoryObj['CURRENT_LISTENERS'] = {
+        GLOBAL: this.globalListeners,
+        PARTIAL: this.partialListeners
       }
-      newHistoryObj['ACTION'] = action
-      newHistoryObj['CHANGES'] = changes
-      console.groupCollapsed(`Store.SAVEHISTORY: ${changes['CHANGE_TYPE']}`)
-      console.dir(this.history.filter(h => h['CHANGES']['CHANGE_TYPE'] === `${changes['CHANGE_TYPE']}`))
+      newHistoryObj['CURRENT_LOCKED_KEYS'] = this.lockedKeyPaths
+      newHistoryObj['STATE'] = this.state
+      console.groupCollapsed(`Store.SAVEHISTORY: ${changeType}`)
+      console.dir(newHistoryObj)
       console.groupEnd()
     }
     this.history.push(newHistoryObj)
@@ -154,7 +149,7 @@ export class StoreService {
 
   // Takes in an action object. Checks for mode setting and locking/unlocking before passing action to reducers.
   dispatch(action: Object): Object {
-    if (this.mode === 'dev' || this.mode === 'devlite') {
+    if (this.mode === 'dev') {
       console.groupCollapsed(`Store.DISPATCH: ${Object.keys(action).map(e => `${e}:${action[e]}`)}`)
       console.log(`Action object received:`)
       console.dir(action)
@@ -167,30 +162,31 @@ export class StoreService {
 
       // Only close console grouping to show console logs if in Dev Mode.
       // Otherwise, don't close console grouping and collect console logs.
-      if (action['mode'] === 'dev' || action['mode'] === 'devlite') console.groupEnd()
+      if (action['mode'] === 'dev') console.groupEnd()
       return
     }
 
-    // Locking specific keys.
-    if (action['lockKeys'] !== undefined) {
-      const newKeys = {}
+    // Locking specific key paths.
+    if (action['lockKeyPaths'] !== undefined) {
+      const newKeyPaths = {}
       const alreadyLocked = {}
-      for (let i in action['lockKeys']) {
-        if (!(action['lockKeys'][i] in this.lockedKeys)) {
-          this.lockedKeys[action['lockKeys'][i]] = true
-          newKeys[action['lockKeys'][i]] = true
+      const keyPathsToLockArray = typeof action['lockKeyPaths'] === 'string' ? [action['lockKeyPaths']] : action['lockKeyPaths']
+      keyPathsToLockArray.forEach(keyPath => {
+        if (!(keyPath in this.lockedKeyPaths)) {
+          this.lockedKeyPaths[keyPath] = true
+          newKeyPaths[keyPath] = true
         }
-        else alreadyLocked[action['lockKeys'][i]] = true
-      }
+        else alreadyLocked[keyPath] = true
+      })
 
-      if (this.mode === 'dev' || this.mode === 'devlite') {
-        if (Object.keys(newKeys).length) {
-          console.groupCollapsed(`Keys locked:`)
-          console.dir(newKeys)
+      if (this.mode === 'dev') {
+        if (Object.keys(newKeyPaths).length) {
+          console.groupCollapsed(`Key paths locked:`)
+          console.dir(newKeyPaths)
           console.groupEnd()
         }
         if (Object.keys(alreadyLocked).length) {
-          console.groupCollapsed(`Keys already locked:`)
+          console.groupCollapsed(`Key paths already locked:`)
           console.dir(alreadyLocked)
           console.groupEnd()
         }
@@ -199,26 +195,27 @@ export class StoreService {
       }
     }
 
-    // Unlocking specific keys.
-    if (action['unlockKeys'] !== undefined) {
-      const newKeys = {}
+    // Unlocking specific key paths.
+    if (action['unlockKeyPaths'] !== undefined) {
+      const newKeyPaths = {}
       const alreadyUnlocked = {}
-      for (let i in action['unlockKeys']) {
-        if ((action['unlockKeys'][i] in this.lockedKeys)) {
-          delete this.lockedKeys[action['unlockKeys'][i]]
-          newKeys[action['unlockKeys'][i]] = true
+      const keyPathsToUnlockArray = typeof action['unlockKeyPaths'] === 'string' ? [action['unlockKeyPaths']] : action['unlockKeyPaths']
+      keyPathsToUnlockArray.forEach(keyPath => {
+        if (keyPath in this.lockedKeyPaths) {
+          delete this.lockedKeyPaths[keyPath]
+          newKeyPaths[keyPath] = true
         }
-        else alreadyUnlocked[action['unlockKeys'][i]] = true
-      }
+        else alreadyUnlocked[keyPath] = true
+      })
 
-      if (this.mode === 'dev' || this.mode === 'devlite') {
-        if (Object.keys(newKeys).length) {
-          console.groupCollapsed(`Keys unlocked:`)
-          console.dir(newKeys)
+      if (this.mode === 'dev') {
+        if (Object.keys(newKeyPaths).length) {
+          console.groupCollapsed(`Key paths unlocked:`)
+          console.dir(newKeyPaths)
           console.groupEnd()
         }
         if (Object.keys(alreadyUnlocked).length) {
-          console.groupCollapsed(`Keys already unlocked:`)
+          console.groupCollapsed(`Key paths already unlocked:`)
           console.dir(alreadyUnlocked)
           console.groupEnd()
         }
@@ -230,7 +227,7 @@ export class StoreService {
     // Checking for lockState command.
     if (action['lockState'] !== undefined) {
       this.stateLocked = true
-      if (this.mode === 'dev' || this.mode === 'devlite') {
+      if (this.mode === 'dev') {
         console.log(`State locked.`)
         console.groupEnd()
       }
@@ -240,7 +237,7 @@ export class StoreService {
     // Checking for unlockState command.
     if (action['unlockState'] !== undefined) {
       this.stateLocked = false
-      if (this.mode === 'dev' || this.mode === 'devlite') {
+      if (this.mode === 'dev') {
         console.log(`State unlocked.`)
         console.groupEnd()
       }
@@ -249,8 +246,8 @@ export class StoreService {
 
     // Checking if entire state is locked.
     if (this.stateLocked) {
-      if (this.mode === 'dev' || this.mode === 'devlite') {
-        console.log("State change operation rejected: State is locked.")
+      if (this.mode === 'dev') {
+        console.warn("State change operation rejected: State is locked.")
         console.groupEnd()
       }
       return
@@ -262,14 +259,40 @@ export class StoreService {
 
     // Checking key paths for changes.
     const keyPathsToCheck = {}
+    // If there were attempts to change locked keys, reject state change.
+    const changedLockedKeys = []
 
     // If KEYPATHS_TO_CHANGE property is found on action object, only check the passed-in key paths that have listeners attached.
     if (action['KEYPATHS_TO_CHANGE'] !== undefined) {
-      let keyPathsToChangeArray = typeof action['KEYPATHS_TO_CHANGE'] === 'string' ? [action['KEYPATHS_TO_CHANGE']] : action['KEYPATHS_TO_CHANGE']
-      keyPathsToChangeArray.forEach(keyPath => { if (keyPath in this.partialListeners) keyPathsToCheck[keyPath] = true })
+      const keyPathsToChangeArray = typeof action['KEYPATHS_TO_CHANGE'] === 'string' ? [action['KEYPATHS_TO_CHANGE']] : action['KEYPATHS_TO_CHANGE']
+      keyPathsToChangeArray.forEach(keyPath => {
+        for (let lockedKeyPath in this.lockedKeyPaths) if (keyPath.indexOf(lockedKeyPath) === 0) changedLockedKeys.push(lockedKeyPath)
+        if (keyPath in this.partialListeners) keyPathsToCheck[keyPath] = true
+      })
+      if (changedLockedKeys.length) {
+        if (this.mode === 'dev') {
+          console.warn("State change operation rejected: Cannot change locked keys:", ...changedLockedKeys)
+          console.groupEnd()
+        }
+        return
+      }
     }
     // If KEYPATHS_TO_CHANGE property is NOT found on action object, check all key paths that have listeners attached.
-    else for (let keyPath in this.partialListeners) keyPathsToCheck[keyPath] = true
+    else {
+      for (let lockedKeyPath in this.lockedKeyPaths) {
+        const oldValue = this.getNestedValue(this.state, lockedKeyPath)
+        const newValue = this.getNestedValue(newState, lockedKeyPath)
+        if (!this.deepCompare(oldValue, newValue)) changedLockedKeys.push(lockedKeyPath)
+      }
+      if (changedLockedKeys.length) {
+        if (this.mode === 'dev') {
+          console.warn("State change operation rejected: Cannot change locked keys:", ...changedLockedKeys)
+          console.groupEnd()
+        }
+        return
+      }
+      for (let keyPath in this.partialListeners) keyPathsToCheck[keyPath] = true
+    }
 
     // Recording changes.
     const changedKeyPaths = {}
@@ -282,7 +305,7 @@ export class StoreService {
         // this.keyPathsChanged will handle every level of nesting below `keyPath`, so no need to iterate.
         if (typeof oldValue === 'object') {
           const subKeysChanged = this.keyPathsChanged(oldValue, newValue)
-          for (let subKey in subKeysChanged) changedKeyPaths[`${keyPath}.${subKey}`] = subKeysChanged[subKey]
+          for (let subKeyPath in subKeysChanged) changedKeyPaths[`${keyPath}.${subKeyPath}`] = subKeysChanged[subKeyPath]
         }
       }
     }
@@ -303,28 +326,14 @@ export class StoreService {
       }
     }
 
-    // If there were attempts to change locked keys, console log an array of the would-be affected
-    // locked keys and return a deep clone of state.
-    const changedLockedKeys = []
-    for (let keyPath in this.lockedKeys) if (keyPath in changedKeyPaths) changedLockedKeys.push(keyPath)
-
-    // If any locked keys were changed, exit DISPATCH function without updating state.
-    if (changedLockedKeys.length) {
-      if (this.mode === 'dev' || this.mode === 'devlite') {
-        console.log("State change operation rejected: Cannot change locked keys:", ...changedLockedKeys)
-        console.groupEnd()
-      }
-      return
-    }
-
     // Update state.
     this.state = newState
 
-    // Ending console group if in 'dev' mode or 'devlite' mode in order to show more console logs.
-    if (this.mode === 'dev' || this.mode === 'devlite') console.groupEnd()
+    // Ending console group if in 'dev' mode in order to show more console logs.
+    if (this.mode === 'dev') console.groupEnd()
 
     // Saves history. Note: SAVEHISTORY method behaves differently according to this.mode setting.
-    this.saveHistory(action, { CHANGE_TYPE: 'STATE', KEYPATHS_CHANGED: changedKeyPaths })
+    this.saveHistory(action, 'STATE')
 
     // Loop through all arrays of partial listeners attached to changed key paths.
     for (let keyPath in changedKeyPaths) {
@@ -344,24 +353,24 @@ export class StoreService {
     // Key path is passed in. Subscribe listener to that specific key path only.
     if (keyPath !== null) {
       this.partialListeners[`${keyPath}`] = this.partialListeners[`${keyPath}`] ? this.partialListeners[`${keyPath}`].concat(fn) : [fn]
-      this.saveHistory({}, { CHANGE_TYPE: 'ADD_LISTENER', LISTENER_TYPE: 'PARTIAL', LISTENER: fn })
+      this.saveHistory({}, 'ADD_PARTIAL_LISTENER')
 
       // Return partial unsubscribe function.
       return () => {
         this.partialListeners[`${keyPath}`] = this.partialListeners[`${keyPath}`].filter(func => func !== fn)
         if (!this.partialListeners[`${keyPath}`].length) delete this.partialListeners[`${keyPath}`]
-        this.saveHistory({}, { CHANGE_TYPE: 'DEL_LISTENER', LISTENER_TYPE: 'PARTIAL', LISTENER: fn })
+        this.saveHistory({}, 'DEL_PARTIAL_LISTENER')
       }
     }
 
     // Key path not passed in. Subscribe listener to entire state object.
     this.globalListeners = this.globalListeners.concat(fn)
-    this.saveHistory({}, { CHANGE_TYPE: 'ADD_LISTENER', LISTENER_TYPE: 'GLOBAL', LISTENER: fn })
+    this.saveHistory({}, 'ADD_GLOBAL_LISTENER')
 
     // Return global unsubscribe function.
     return () => {
       this.globalListeners = this.globalListeners.filter(func => func !== fn)
-      this.saveHistory({}, { CHANGE_TYPE: 'DEL_LISTENER', LISTENER_TYPE: 'GLOBAL', LISTENER: fn })
+      this.saveHistory({}, 'DEL_GLOBAL_LISTENER')
     }
   }
 }

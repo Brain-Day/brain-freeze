@@ -33,7 +33,7 @@ export class StoreService {
     }
 
     // Compares two objects at every level and returns boolean indicating if they are the same.
-    deepCompare(obj1: Object, obj2: Object): Boolean {
+    deepCompare(obj1: Object, obj2: Object): boolean {
         if (typeof obj1 !== typeof obj2 || Array.isArray(obj1) !== Array.isArray(obj2)) return false
         if (typeof obj1 !== 'object') return obj1 === obj2
         for (let n1 in obj1) if (!(n1 in obj2)) return false
@@ -64,7 +64,7 @@ export class StoreService {
         const remainingKeyPaths = allKeyPaths1.filter(keyPath => allKeyPaths2.indexOf(keyPath) > -1)
         const changes = {}
         const remainingKeyPathsLength = remainingKeyPaths.length
-    
+
         remainingKeyPaths.forEach(keyPath => {
             const val1 = this.getNestedValue(obj1, keyPath)
             const val2 = this.getNestedValue(obj2, keyPath)

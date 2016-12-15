@@ -247,7 +247,11 @@ export class StoreService {
     // Checking if entire state is locked.
     if (this.stateLocked) {
       if (this.mode === 'dev') {
+<<<<<<< HEAD
         console.warn("State change operation rejected: State is locked.")
+=======
+        console.log("State change operation rejected: State is locked.")
+>>>>>>> 624532402a4359c6c4ec74a84b4daa8cf0b8e0b1
         console.groupEnd()
       }
       return
@@ -257,6 +261,22 @@ export class StoreService {
     const newState = this.deepClone(this.state, false)
     for (let key in this.mainReducer) newState[key] = this.mainReducer[key](newState[key], action)
 
+    // If there were attempts to change locked keys, reject state change.
+    const changedLockedKeys = []
+    for (let keyPath in this.lockedKeyPaths) {
+      const oldValue = this.getNestedValue(this.state, keyPath)
+      const newValue = this.getNestedValue(newState, keyPath)
+      if (!this.deepCompare(oldValue, newValue)) changedLockedKeys.push(keyPath)
+    }
+
+    if (changedLockedKeys.length) {
+      if (this.mode === 'dev') {
+        console.log("State change operation rejected: Cannot change locked keys:", ...changedLockedKeys)
+        console.groupEnd()
+      }
+      return
+    }
+
     // Checking key paths for changes.
     const keyPathsToCheck = {}
     // If there were attempts to change locked keys, reject state change.
@@ -265,6 +285,7 @@ export class StoreService {
     // If KEYPATHS_TO_CHANGE property is found on action object, only check the passed-in key paths that have listeners attached.
     if (action['KEYPATHS_TO_CHANGE'] !== undefined) {
       const keyPathsToChangeArray = typeof action['KEYPATHS_TO_CHANGE'] === 'string' ? [action['KEYPATHS_TO_CHANGE']] : action['KEYPATHS_TO_CHANGE']
+<<<<<<< HEAD
       keyPathsToChangeArray.forEach(keyPath => {
         for (let lockedKeyPath in this.lockedKeyPaths) if (keyPath.indexOf(lockedKeyPath) === 0) changedLockedKeys.push(lockedKeyPath)
         if (keyPath in this.partialListeners) keyPathsToCheck[keyPath] = true
@@ -276,6 +297,9 @@ export class StoreService {
         }
         return
       }
+=======
+      keyPathsToChangeArray.forEach(keyPath => { if (keyPath in this.partialListeners) keyPathsToCheck[keyPath] = true })
+>>>>>>> 624532402a4359c6c4ec74a84b4daa8cf0b8e0b1
     }
     // If KEYPATHS_TO_CHANGE property is NOT found on action object, check all key paths that have listeners attached.
     else {

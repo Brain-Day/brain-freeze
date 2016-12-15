@@ -297,8 +297,8 @@ export class StoreService {
         }
       }
     }
-    // If no key paths specified, check entire state object.
-    else if (action['type'] !== undefined) changedKeyPaths = this.keyPathsChanged(this.state, newState)
+    // If no key paths specified, only check entire state object IF commanded by presence of action['checkKeys'].
+    else if (action['type'] !== undefined && action['checkKeys']) changedKeyPaths = this.keyPathsChanged(this.state, newState)
 
     // If there were attempts to change locked keys, console log an array of the would-be affected
     // locked keys and return a deep clone of state.

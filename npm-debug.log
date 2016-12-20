@@ -1,0 +1,92 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'publish' ]
+2 info using npm@3.10.8
+3 info using node@v7.0.0
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   escapedName: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/Users/RyanBas/Documents/web_development/codesmith/angular2/bdss',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /Users/RyanBas/.npm/brain-freeze/1.1.7/package.tgz not in flight; packing
+9 verbose correctMkdir /Users/RyanBas/.npm correctMkdir not in flight; initializing
+10 info lifecycle brain-freeze@1.1.7~prepublish: brain-freeze@1.1.7
+11 silly lifecycle brain-freeze@1.1.7~prepublish: no script for prepublish, continuing
+12 verbose tar pack [ '/Users/RyanBas/.npm/brain-freeze/1.1.7/package.tgz',
+12 verbose tar pack   '/Users/RyanBas/Documents/web_development/codesmith/angular2/bdss' ]
+13 verbose tarball /Users/RyanBas/.npm/brain-freeze/1.1.7/package.tgz
+14 verbose folder /Users/RyanBas/Documents/web_development/codesmith/angular2/bdss
+15 verbose addLocalTarball adding from inside cache /Users/RyanBas/.npm/brain-freeze/1.1.7/package.tgz
+16 verbose correctMkdir /Users/RyanBas/.npm correctMkdir not in flight; initializing
+17 silly cache afterAdd brain-freeze@1.1.7
+18 verbose afterAdd /Users/RyanBas/.npm/brain-freeze/1.1.7/package/package.json not in flight; writing
+19 verbose correctMkdir /Users/RyanBas/.npm correctMkdir not in flight; initializing
+20 verbose afterAdd /Users/RyanBas/.npm/brain-freeze/1.1.7/package/package.json written
+21 silly publish { name: 'brain-freeze',
+21 silly publish   version: '1.1.7',
+21 silly publish   description: 'Redux-Like State Management Service',
+21 silly publish   main: 'index.js',
+21 silly publish   typings: 'index.d.ts',
+21 silly publish   scripts: { test: 'echo "Error: no test specified" && exit 1' },
+21 silly publish   repository:
+21 silly publish    { type: 'git',
+21 silly publish      url: 'git+https://github.com/Brain-Day/brain-freeze.git' },
+21 silly publish   keywords:
+21 silly publish    [ 'Angular 2',
+21 silly publish      'Angular',
+21 silly publish      'State',
+21 silly publish      'Redux',
+21 silly publish      'Freeze',
+21 silly publish      'JavaScript',
+21 silly publish      'React' ],
+21 silly publish   author: { name: 'Brain Day' },
+21 silly publish   license: 'MIT',
+21 silly publish   bugs: { url: 'https://github.com/Brain-Day/brain-freeze/issues' },
+21 silly publish   homepage: 'https://github.com/Brain-Day/brain-freeze#readme',
+21 silly publish   dependencies: { '@angular/core': '^2.3.0' },
+21 silly publish   readme: '# Brain Freeze\n#Synopsis\n\nBrainfreeze takes advantage of redux architecture. That means that a lot of how Brainfreeze works is very similar to how redux, or a redux-like library works. The basic structure of Brainfreeze follows the dispatch an action => reducer => update/change state => return a new state.\n\nBrainfreeze still follows the functional approach that redux follows, we feel that is an appropriate approach to state containers.\n\nWhere does Brainfreeze differentiate itself?\n\nBrainfreeze saw an issue where as applications scaled, the amount of \'listeners\' on the page that were reacting to a state change could become taxing on performance. Brainfreeze focuses on the developer gaining more control over the their application state. We allow for this by creating a flattened state model that is able to create a mapping of the state object. By doing this we allow specific pieces of state to map to their specific listener. The listener now will only react to the changes that are neccessary to them when state is set.\n\nDoing this, we also enabled middleware functionality for more control over the state object. By creating this model, we set out create less business logic needed in the reducers and create more room for the developer to code what they want to code, and let the library hash out the unwanted logic. We are excited to dive into the depths of what Brainfreeze can do.\n\n#API Reference\nBrainfreeze aims to provide a familiar and predictable state container.\n\n#Installation\n        npm i brain-freeze --save\n\n#Documentation\nCombineReducers [optional:action.types:string] : Void\nAdds reducers to be run on state on invocation of dispatch.\nThe reducer object should take the same shape as the state object.\n\n```Get State : Object\nObject returns state````\n\n````Dispatch : Object\nTakes in action objects and checks for lock related commands (see locked state) before running state through reducers````\n\n````Subscribe : Function\nSubscribes a listener function to state changes (globally or to a specific key path)\n and returns a function to unsubscribe the same listener function.\n In order to subscribe to a specific key path, the developer must pass in a second argument after the listener,\n that is the key path within the state object, as a string. This must be done in dot notation, even with arrays.````\n\n  ````  Actions are generally made by the developer. These are strings that are dispatched to a reducer, that tells the reducer what to do. Brain-Freeze comes with a few of these out of the box to take\n  full advantage of what the library has to offer.````\n\n    Lock State\n\n      By attaching a \'lockState\' property to the action object upon dispatch, the dispatch method will lock the state\n    and refuse to change state until it receives an action object with the \'unlockState\' property. If the\n     dispatch method sees the \'lockState\' or \'unlockState\' property it will lock or unlock state respectively,\n    and then exit.\n\n  ````Locking Specific Key Paths\n      Locking specific keys gives the developer the ability to make pieces of state immutable.\n       This is done by dispatching an action, called \'lockKeys\'. If an action is dispatched to this key while it\'s leave of state is locked, the action will be intercepted and the change will not occur\n       In certain modes, like dev-mode, the console will log out that the key is locked, and will give the developer some feedback.````\n\n# Under The Hood\n\n````Get ALl Keys : Function\nReturns flattened object from nested object````\n\n````Key Paths Changed : Function\nReturns array of keys from obj1 that are not the same in obj2. Will not return keys from obj2 that are not in obj1.````\n\n````Save History : Function\nSaves a history of state in the form of an array of deep cloned, deep frozen copies.````\n\n\n## Tests\nTo Come ...\n## Contributors\n[![Image of Edward](https://avatars3.githubusercontent.com/u/10620846?v=3&s=190)](https://github.com/Eviscerare)\n[![Image of Thai](https://avatars3.githubusercontent.com/u/20631126?v=3&s=190)](https://github.com/soleiluwedu)\n[![Image of Ryan](https://avatars1.githubusercontent.com/u/18267769?v=3&s=190)](https://github.com/ryanbas21)\n## License\nMIT\n',
+21 silly publish   readmeFilename: 'README.md',
+21 silly publish   gitHead: 'ddda5485a8916989896120fe33e20d12d5c39841',
+21 silly publish   _id: 'brain-freeze@1.1.7',
+21 silly publish   _shasum: '1051f92bc468dcc83e038e146fb29b0bfab8ed8e',
+21 silly publish   _from: '.' }
+22 verbose getPublishConfig undefined
+23 silly mapToRegistry name brain-freeze
+24 silly mapToRegistry using default registry
+25 silly mapToRegistry registry https://registry.npmjs.org/
+26 silly mapToRegistry data Result {
+26 silly mapToRegistry   raw: 'brain-freeze',
+26 silly mapToRegistry   scope: null,
+26 silly mapToRegistry   escapedName: 'brain-freeze',
+26 silly mapToRegistry   name: 'brain-freeze',
+26 silly mapToRegistry   rawSpec: '',
+26 silly mapToRegistry   spec: 'latest',
+26 silly mapToRegistry   type: 'tag' }
+27 silly mapToRegistry uri https://registry.npmjs.org/brain-freeze
+28 verbose publish registryBase https://registry.npmjs.org/
+29 silly publish uploading /Users/RyanBas/.npm/brain-freeze/1.1.7/package.tgz
+30 verbose stack Error: auth required for publishing
+30 verbose stack     at CachingRegistryClient.publish (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/publish.js:30:14)
+30 verbose stack     at /usr/local/lib/node_modules/npm/lib/publish.js:138:14
+30 verbose stack     at mapToRegistry (/usr/local/lib/node_modules/npm/lib/utils/map-to-registry.js:62:3)
+30 verbose stack     at publish_ (/usr/local/lib/node_modules/npm/lib/publish.js:107:3)
+30 verbose stack     at Array.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/slide/lib/bind-actor.js:15:8)
+30 verbose stack     at LOOP (/usr/local/lib/node_modules/npm/node_modules/slide/lib/chain.js:15:14)
+30 verbose stack     at LOOP (/usr/local/lib/node_modules/npm/node_modules/slide/lib/chain.js:14:28)
+30 verbose stack     at chain (/usr/local/lib/node_modules/npm/node_modules/slide/lib/chain.js:20:5)
+30 verbose stack     at /usr/local/lib/node_modules/npm/lib/publish.js:73:5
+30 verbose stack     at RES (/usr/local/lib/node_modules/npm/node_modules/inflight/inflight.js:23:14)
+31 verbose cwd /Users/RyanBas/Documents/web_development/codesmith/angular2/bdss
+32 error Darwin 15.6.0
+33 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "publish"
+34 error node v7.0.0
+35 error npm  v3.10.8
+36 error code ENEEDAUTH
+37 error need auth auth required for publishing
+38 error need auth You need to authorize this machine using `npm adduser`
+39 verbose exit [ 1, true ]

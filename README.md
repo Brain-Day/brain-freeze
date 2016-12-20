@@ -51,7 +51,7 @@ Subscribes a listener function to state changes (globally or to a specific key p
 
 # Under The Hood
 
-````Get class Keys : Function
+````Get ALl Keys : Function
 Returns flattened object from nested object````
 
 ````Key Paths Changed : Function

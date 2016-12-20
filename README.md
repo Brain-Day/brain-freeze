@@ -39,12 +39,12 @@ Subscribes a listener function to state changes (globally or to a specific key p
 
     Lock State
 
-      ````By attaching a 'lockState' property to the action object upon dispatch, the dispatch method will lock the state
+      By attaching a 'lockState' property to the action object upon dispatch, the dispatch method will lock the state
     and refuse to change state until it receives an action object with the 'unlockState' property. If the
      dispatch method sees the 'lockState' or 'unlockState' property it will lock or unlock state respectively,
-    and then exit.````
+    and then exit.
 
-  ````  Locking Specific Key Paths
+  ````Locking Specific Key Paths
       Locking specific keys gives the developer the ability to make pieces of state immutable.
        This is done by dispatching an action, called 'lockKeys'. If an action is dispatched to this key while it's leave of state is locked, the action will be intercepted and the change will not occur
        In certain modes, like dev-mode, the console will log out that the key is locked, and will give the developer some feedback.````
@@ -59,6 +59,7 @@ Returns array of keys from obj1 that are not the same in obj2. Will not return k
 
 ````Save History : Function
 Saves a history of state in the form of an array of deep cloned, deep frozen copies.````
+
 
 ## Tests
 To Come ...

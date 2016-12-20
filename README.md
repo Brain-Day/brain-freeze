@@ -15,7 +15,7 @@ Doing this, we also enabled middleware functionality for more control over the s
 Brainfreeze aims to provide a familiar and predictable state container.
 
 #Installation
-        npm i brain-freeze --save
+çnpm i brain-freeze --save
 
 #Documentation
 CombineReducers [optional:action.types:string] : Void
@@ -26,7 +26,7 @@ The reducer object should take the same shape as the state object.
 
 ```dispatch : Takes in action objects and checks for lock related commands (see locked state) before running state through reducers```
 
-```subscribe : Subscribes a listener function to state changes (globally or to a specific key path) and returns a function to unsubscribe the same listener function. In order to subscribe to a specific key path, the developer must pass in a second argument after the listener, that is the key path within the state object, as a string. This must be done in dot notation, even with arrays.```
+```subscribe : Subscribes a listener function to state changes (globally or to a specific key path) and returns a function to unsubscribe the same listener function. In order to subscribe to a specific key path, the developer passes in a second argument after the listener, which is the string that is the key path they wish to subscribe to. This must be done in dot notation, even with arrays.```
 
 ```Lock State : By attaching a 'lockState' property to the action object upon dispatch, the dispatch method will lock the state and refuse to change state until it receives an action object with the 'unlockState' property. If the dispatch method sees the 'lockState' or 'unlockState' property it will lock or unlock state respectively, and then exit.```
 

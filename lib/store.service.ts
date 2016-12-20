@@ -10,7 +10,7 @@ export class StoreService {
   // Set to anything else to save only action objects.
   private mode: string = 'dev'
 
-  // Current state.  
+  // Current state.
   private state: Object
 
   // When set to true (triggered by presence of 'lockState' property on action object), state cannot
@@ -59,6 +59,9 @@ export class StoreService {
 
   // Takes dot notation key path and returns nested value
   getNestedValue(obj: Object, keyPath: string): any {
+  //  let path = keyPath.replace(/\./g, "']['")}']`
+  //  obj[path]
+  //  obj=> obj.key.path.nested
     return eval(`obj['${keyPath.replace(/\./g, "']['")}']`)
   }
 

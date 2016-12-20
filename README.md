@@ -18,9 +18,8 @@ Brainfreeze aims to provide a familiar and predictable state container.
 çnpm i brain-freeze --save
 
 #Documentation
-CombineReducers [optional:action.types:string] : Void
-Adds reducers to be run on state on invocation of dispatch.
-The reducer object should take the same shape as the state object.
+
+```CombineReducers : Accepts object of reducers in the shape of state.```
 
 ```getState : Returns state```
 

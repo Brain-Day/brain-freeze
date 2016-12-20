@@ -24,11 +24,9 @@ The reducer object should take the same shape as the state object.
 
 ```getState : Returns state```
 
-```dispatch : Takes in action objects and checks for lock related commands (see locked state) before running state through reducers````
+```dispatch : Takes in action objects and checks for lock related commands (see locked state) before running state through reducers```
 
 ```subscribe : Subscribes a listener function to state changes (globally or to a specific key path) and returns a function to unsubscribe the same listener function. In order to subscribe to a specific key path, the developer must pass in a second argument after the listener, that is the key path within the state object, as a string. This must be done in dot notation, even with arrays.```
-
-```Actions are generally made by the developer. These are strings that are dispatched to a reducer, that tells the reducer what to do. Brain-Freeze comes with a few of these out of the box to take full advantage of what the library has to offer.````
 
 ```Lock State
 

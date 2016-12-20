@@ -18,49 +18,47 @@ Brainfreeze aims to provide a familiar and predictable state container.
         npm i brain-freeze --save
 
 #Documentation
-CombineReducers [optional:action.types:string] : Void
+`````CombineReducers [optional:action.types:string] : Void
 Adds reducers to be run on state on invocation of dispatch.
-The reducer object should take the same shape as the state object.
+The reducer object should take the same shape as the state object.````
 
-Get State : Object
-Object returns state
+````Get State : Object
+Object returns state````
 
-Dispatch : Object
-Takes in action objects and checks for lock related commands (see locked state) before running state through reducers
+````Dispatch : Object
+Takes in action objects and checks for lock related commands (see locked state) before running state through reducers````
 
-Subscribe : Function
+````Subscribe : Function
 Subscribes a listener function to state changes (globally or to a specific key path)
  and returns a function to unsubscribe the same listener function.
  In order to subscribe to a specific key path, the developer must pass in a second argument after the listener,
- that is the key path within the state object, as a string. This must be done in dot notation, even with arrays.
+ that is the key path within the state object, as a string. This must be done in dot notation, even with arrays.````
 
-    Actions are generally made by the developer. These are strings that are dispatched to a reducer,
-  that tells the reducer what to do. Brain-Freeze comes with a few of these out of the box to take
-  full advantage of what the library has to offer.
+  ````  Actions are generally made by the developer. These are strings that are dispatched to a reducer, that tells the reducer what to do. Brain-Freeze comes with a few of these out of the box to take
+  full advantage of what the library has to offer.````
 
     Lock State
 
-      By attaching a 'lockState' property to the action object upon dispatch, the dispatch method will lock the state
+      ````By attaching a 'lockState' property to the action object upon dispatch, the dispatch method will lock the state
     and refuse to change state until it receives an action object with the 'unlockState' property. If the
      dispatch method sees the 'lockState' or 'unlockState' property it will lock or unlock state respectively,
-    and then exit.
+    and then exit.````
 
-    Locking Specific Key Paths
+  ````  Locking Specific Key Paths
       Locking specific keys gives the developer the ability to make pieces of state immutable.
        This is done by dispatching an action, called 'lockKeys'. If an action is dispatched to this key while it's leave of state is locked, the action will be intercepted and the change will not occur
-       In certain modes, like dev-mode, the console will log out that the key is locked, and will give the developer
-       some feedback.
+       In certain modes, like dev-mode, the console will log out that the key is locked, and will give the developer some feedback.````
 
 # Under The Hood
 
-Get class Keys : Function
-Returns flattened object from nested object
+````Get class Keys : Function
+Returns flattened object from nested object````
 
-Key Paths Changed : Function
-Returns array of keys from obj1 that are not the same in obj2. Will not return keys from obj2 that are not in obj1.
+````Key Paths Changed : Function
+Returns array of keys from obj1 that are not the same in obj2. Will not return keys from obj2 that are not in obj1.````
 
-Save History : Function
-Saves a history of state in the form of an array of deep cloned, deep frozen copies.
+````Save History : Function
+Saves a history of state in the form of an array of deep cloned, deep frozen copies.````
 ```
 ## Tests
 To Come ...

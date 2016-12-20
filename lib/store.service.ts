@@ -199,8 +199,8 @@ export class StoreService {
       console.warn("State change operation rejected: State is locked.")
       return
     }
-    
-    if (!('KEYPATHS_TO_CHANGE' in action)) throw Error("Need KEYPATHS_TO_CHANGE property with array of all key paths that will be changed.")
+
+    if (!('KEYPATHS_TO_CHANGE' in action)) throw Error("Action object needs KEYPATHS_TO_CHANGE property with array of all key paths that will be changed.")
 
     // Updating state object.
     for (let key in this.mainReducer) this.state[key] = this.mainReducer[key](this.state[key], action)

@@ -28,13 +28,9 @@ The reducer object should take the same shape as the state object.
 
 ```subscribe : Subscribes a listener function to state changes (globally or to a specific key path) and returns a function to unsubscribe the same listener function. In order to subscribe to a specific key path, the developer must pass in a second argument after the listener, that is the key path within the state object, as a string. This must be done in dot notation, even with arrays.```
 
-```Lock State
+```Lock State:  By attaching a 'lockState' property to the action object upon dispatch, the dispatch method will lock the state and refuse to change state until it receives an action object with the 'unlockState' property. If the dispatch method sees the 'lockState' or 'unlockState' property it will lock or unlock state respectively, and then exit.```
 
-By attaching a 'lockState' property to the action object upon dispatch, the dispatch method will lock the state and refuse to change state until it receives an action object with the 'unlockState' property. If the dispatch method sees the 'lockState' or 'unlockState' property it will lock or unlock state respectively, and then exit.```
-
-```Locking Specific Key Paths
-
-Locking specific keys gives the developer the ability to make pieces of state immutable. This is done by dispatching an action, called 'lockKeys'. If an action is dispatched to this key while it's leave of state is locked, the action will be intercepted and the change will not occur. In certain modes, like dev-mode, the console will log out that the key is locked, and will give the developer some feedback.```
+```Locking Specific Keys : This gives the developer the ability to make pieces of state immutable. This is done by dispatching an action, called 'lockKeys'. If an action is dispatched to this key while it's leave of state is locked, the action will be intercepted and the change will not occur. In certain modes, like dev-mode, the console will log out that the key is locked, and will give the developer some feedback.```
 
 # Under The Hood
 

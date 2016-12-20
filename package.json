@@ -1,6 +1,6 @@
 {
   "name": "brain-freeze",
-  "version": "1.1.5",
+  "version": "1.1.7",
   "description": "Redux-Like State Management Service",
   "main": "index.js",
   "typings": "index.d.ts",

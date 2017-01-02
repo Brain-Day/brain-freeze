@@ -7,7 +7,7 @@ Brainfreeze still follows the functional approach that redux follows, we feel th
 
 Where does Brainfreeze differentiate itself?
 
-Brainfreeze saw an issue where as applications scaled, the amount of 'listeners' on the page that were reacting to a state change could become taxing on performance. Brainfreeze focuses on the developer gaining more control over the their application state. We allow for this by creating a flattened state model that is able to create a mapping of the state object. By doing this we allow specific pieces of state to map to their specific listener. The listener now will only react to the changes that are neccessary to them when state is set.
+Brainfreeze saw an issue where as applications scaled, the amount of 'listeners' on the page that were reacting to a state change could become taxing on performance. Brainfreeze focuses on the developer gaining more control over their application state. We allow for this by creating a flattened state model that is able to create a mapping of the state object. By doing this we allow specific pieces of state to map to their specific listener. The listener now will only react to the changes that are neccessary to them when state is set.
 
 Doing this, we also enabled middleware functionality for more control over the state object. By creating this model, we set out create less business logic needed in the reducers and create more room for the developer to code what they want to code, and let the library hash out the unwanted logic. We are excited to dive into the depths of what Brainfreeze can do.
 
@@ -15,7 +15,7 @@ Doing this, we also enabled middleware functionality for more control over the s
 Brainfreeze aims to provide a familiar and predictable state container.
 
 #Installation
-çnpm i brain-freeze --save
+`npm i brain-freeze --save`
 
 #Documentation
 
